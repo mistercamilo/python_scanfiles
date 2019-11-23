@@ -3,29 +3,27 @@
 import os, time, glob, json, itertools, filecmp
 
 files_list = []
-files_remove = []
-#dirs_list = []
+dirs_list = []
 
-files_dict = {}
-
-path = "/home/camilo/workspace/superdigital/clear_images/2019"
+path = "/home/camilo/workspace/python/2019"
 
 for (root, dirs, files) in os.walk(path, topdown=False):
-
    for name in files:
       dirs = os.path.join(root)
       if len(os.listdir(dirs)) > 1:
-         #print(abc + " " + str(len(os.listdir(abc))))
-         files_list.append(os.path.join(root, name))
+         dirs_list.append(os.path.join(root))
 
+dirs_list_unique = (set(dirs_list))
 
-for a in sorted(files_list):
-   #print(a + " " + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(a))))
-   files_dict[a] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(a)))
+for root in sorted(dirs_list_unique):
+    for b in os.listdir(root):
+        if os.path.isfile(os.path.join(root, b)):
+            files_list.append(os.path.join(root, b))
 
-#print("\n",json.dumps(files_dict))
+    files_list = sorted(files_list, key=os.path.getmtime)
 
+    del files_list[-1]
 
-for f1, f2 in itertools.combinations(files_list, 2):
-    if filecmp.cmp(f1, f2):
-        print(f1, f2)
+    for files2del in files_list:
+        os.remove(files2del)
+    files_list.clear()    
